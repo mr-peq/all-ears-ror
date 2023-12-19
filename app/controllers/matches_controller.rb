@@ -33,8 +33,10 @@ class MatchesController < ApplicationController
   end
 
   def create
+    # Expects both match params and a user nickname array of all the players
     begin
       @match = Match.create!(match_params)
+      add_users_to_match(@match, params[:nicknames])
     rescue => exception
       @errors = exception
     end
@@ -42,12 +44,19 @@ class MatchesController < ApplicationController
     if @errors
       render json: @errors, status: :unprocessable_entity
     else
-      render json: @match
+      render json: @match.stats
     end
   end
 
 
   private
+
+  def add_users_to_match(match, nicknames)
+    nicknames.each do |nickname|
+      user = User.find_by(nickname:)
+      UserMatch.create!(user:, match:)
+    end
+  end
 
   def match_params
     params.require(:match).permit(:number_of_rounds)
