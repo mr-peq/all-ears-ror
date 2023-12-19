@@ -7,4 +7,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  resources :users, only: [:index, :create]
+  get "users/:nickname", to: "users#show"
+
+  resources :matches, only: [:index, :show, :create, :update]
 end
