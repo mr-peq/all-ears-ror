@@ -9,7 +9,11 @@ class MatchesController < ApplicationController
     if @errors
       render json: @errors
     else
-      render json: @matches
+      @response = []
+      @matches.each do |match|
+        @response << match.stats
+      end
+      render json: @response
     end
   end
 
@@ -23,7 +27,8 @@ class MatchesController < ApplicationController
     if @errors
       render json: @errors, status: :unprocessable_entity
     else
-      render json: @match
+      @response = @match.stats
+      render json: @response
     end
   end
 

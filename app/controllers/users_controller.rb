@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-
   def index
     begin
       @users = User.all
@@ -10,13 +9,18 @@ class UsersController < ApplicationController
     if @errors
       render json: @errors
     else
-      render json: @users
+      @response = []
+      @users.each do |user|
+        @response << user.stats
+      end
+      render json: @response
     end
   end
 
   def show
-    @user = User.find_by(nickname: params[:nickname])
-    render json: @user
+    user = User.find_by(nickname: params[:nickname])
+    @response = user.stats
+    render json: @response
   end
 
   def create
