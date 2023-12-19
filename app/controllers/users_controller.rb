@@ -21,7 +21,7 @@ class UsersController < ApplicationController
 
   def create
     begin
-      @user = User.create!(nickname: params[:nickname])
+      @user = User.create!(user_params)
     rescue => exception
       @errors = exception
     end
@@ -31,5 +31,12 @@ class UsersController < ApplicationController
     else
       render json: @user
     end
+  end
+
+
+  private
+
+  def user_params
+    params.require(:user).permit(:nickname)
   end
 end
