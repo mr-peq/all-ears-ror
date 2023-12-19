@@ -33,16 +33,18 @@ class MatchesController < ApplicationController
   end
 
   def create
-    # Expects both match params and a user nickname array of all the players
+    # Expects both match params and an array of all participating players' nicknames
     begin
+      nicknames_valid?
+      users = params[:nicknames].map { |nickname| User.find_by!(nickname:) }
       @match = Match.create!(match_params)
-      add_users_to_match(@match, params[:nicknames])
+      add_users_to_match(@match, users)
     rescue => exception
       @errors = exception
     end
 
     if @errors
-      render json: @errors, status: :unprocessable_entity
+      render json: @errors.message, status: :unprocessable_entity
     else
       render json: @match.stats
     end
@@ -51,9 +53,14 @@ class MatchesController < ApplicationController
 
   private
 
-  def add_users_to_match(match, nicknames)
-    nicknames.each do |nickname|
-      user = User.find_by(nickname:)
+  def nicknames_valid?
+    if params[:nicknames].blank? || params[:nicknames].uniq.length < 3 || params[:nicknames].uniq.length > 10
+      raise ArgumentError, "#{params[:nicknames].blank? ? 0 : params[:nicknames].uniq.length } players provided, there must be 3..10 players"
+    end
+  end
+
+  def add_users_to_match(match, users)
+    users.each do |user|
       UserMatch.create!(user:, match:)
     end
   end

@@ -18,9 +18,17 @@ class UsersController < ApplicationController
   end
 
   def show
-    user = User.find_by(nickname: params[:nickname])
-    @response = user.stats
-    render json: @response
+    begin
+      @user = User.find_by(nickname: params[:nickname])
+    rescue => exception
+      @errors = exception
+    end
+
+    if @errors
+      render json: @errors
+    else
+      render json: @user.stats
+    end
   end
 
   def create

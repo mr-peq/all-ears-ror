@@ -2,6 +2,8 @@ class Match < ApplicationRecord
   has_many :user_matches
   has_many :users, through: :user_matches
 
+  validates :number_of_rounds, numericality: { in: 3..10 }
+
   def stats
     {
       id:,
