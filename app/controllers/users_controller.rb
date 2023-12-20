@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   def index
     begin
       @users = User.all
+      raise StandardError, "No users found" unless 0 < @users.length
     rescue => exception
       @errors = exception
     end
@@ -20,6 +21,7 @@ class UsersController < ApplicationController
   def show
     begin
       @user = User.find_by(nickname: params[:nickname])
+      raise ArgumentError, "User with nickname #{params[:nickname]} not found"
     rescue => exception
       @errors = exception
     end
