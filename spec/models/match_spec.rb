@@ -7,7 +7,7 @@ RSpec.describe Match, type: :model do
 
   match = Match.create(number_of_rounds: rand(3..10))
   user = User.create(nickname: 'allen')
-  user_match = UserMatch.create(user:, match:, score: rand(0..2))
+  UserMatch.create(user:, match:, score: 2)
 
   describe "#stats" do
     it "returns match details" do
