@@ -3,4 +3,3 @@ FactoryBot.define do
       nickname { 'test-user' }
     end
   end
-   

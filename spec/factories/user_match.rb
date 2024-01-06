@@ -1,7 +1,6 @@
 FactoryBot.define do
     factory :user_match do
-      user 
+      user
       match
     end
   end
-  
