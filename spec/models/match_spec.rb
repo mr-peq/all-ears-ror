@@ -1,15 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Match, type: :model do
-  UserMatch.destroy_all
-  Match.destroy_all
-  User.destroy_all
-
-  match = Match.create(number_of_rounds: rand(3..10))
-  allen = User.create(nickname: 'allen')
-  User.create(nickname: 'joe')
-  User.create(nickname: 'sam')
-  UserMatch.create(user: allen, match:, score: 2)
+  let(:user_match) { create(:user_match) }
+  let(:match) { user_match.match }
 
   describe "#stats" do
     it "returns match details" do
@@ -30,11 +23,11 @@ RSpec.describe Match, type: :model do
   describe 'match creation' do
     it "A match should not be persisted in db if its number_of_rounds is < 3" do
       invalid_match = Match.new(number_of_rounds: 2)
-      expect( invalid_match.valid?() ).to eq(false)
+      expect( invalid_match.valid? ).to eq(false)
     end
     it "A match should not be persisted in db if its number_of_rounds is > 10" do
       invalid_match = Match.new(number_of_rounds: 11)
-      expect( invalid_match.valid?() ).to eq(false)
+      expect( invalid_match.valid? ).to eq(false)
     end
   end
 end

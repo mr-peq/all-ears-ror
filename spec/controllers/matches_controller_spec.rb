@@ -1,6 +1,9 @@
 require "rails_helper"
 
 RSpec.describe MatchesController, type: :controller do
+  let(:match) { create(:match_with_3_users) }
+  let(:match_2) { create(:match_with_3_users) }
+
   describe 'GET#index' do
     it "returns a 200 HTTP status" do
       get :index
@@ -20,19 +23,19 @@ RSpec.describe MatchesController, type: :controller do
 
   describe 'GET#show' do
     it "returns a 200 HTTP status when the id given is valid" do
-      id = Match.last.id
+      id = match.id
       get :show, params: { id: }
       expect( response ).to have_http_status(200)
     end
 
     it "returns :unprocessable_entity error when the id given is not valid" do
-      id = Match.last.id + 100
+      id = match.id + 100
       get :show, params: { id: }
       expect( response ).to have_http_status(:unprocessable_entity)
     end
 
     it "returns match stats" do
-      id = Match.last.id
+      id = match.id
       get :show, params: { id: }
       expect( response.parsed_body.keys ).to include('id', 'number_of_rounds', 'user_scores')
     end
@@ -40,12 +43,13 @@ RSpec.describe MatchesController, type: :controller do
 
   describe 'POST#create' do
     it "creates a new match if the params are correct" do
-      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['allen', 'joe', 'sam'] }
+      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['user2', 'user4', 'user6'] }
+      p response.body
       expect( response ).to have_http_status(200)
     end
 
     it "returns the newly created match stats" do
-      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['allen', 'joe', 'sam'] }
+      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['user2', 'user4', 'user6'] }
       expect( response.parsed_body.keys ).to include('id', 'number_of_rounds', 'user_scores' )
     end
   end
@@ -70,8 +74,43 @@ RSpec.describe MatchesController, type: :controller do
     end
 
     it "returns :unprocessable_entity error if a player sent in params does not exist" do
-      post :create, params: { match: { number_of_rounds: 3 }, nicknames: ['allen', 'joe', 'intruder'] }
+      post :create, params: { match: { number_of_rounds: 3 }, nicknames: ['user2', 'user4', 'intruder'] }
       expect( response ).to have_http_status(:unprocessable_entity)
+    end
+  end
+
+  describe 'PATCH#update' do
+    it "returns an error if a user sent in params does not exist" do
+      id = match.id
+      patch :update, params: { id:, players: [{ nickname: "intruder", score: 4 }] }
+      expected_response = "Couldn't find a player with this nickname: intruder"
+      expect( response.body ).to eq(expected_response)
+    end
+
+    it "returns an error if a user sent in params is not playing in this match" do
+      id = match.id
+      patch :update, params: { id:, players: [{ nickname: "peq", score: 777 }] }
+      expected_response = "Player with nickname [peq] is not a participant of this match"
+      expect( response.body ).to eq(expected_response)
+    end
+
+    it "updates the users' scores" do
+      id = match.id
+      allen_score = 42
+      joe_score = 21
+      sam_score = 9
+      players = [
+        { nickname: "user2", score: allen_score },
+        { nickname: "user4", score: joe_score },
+        { nickname: "user6", score: sam_score }
+      ]
+      patch :update, params: { id:, players: }
+      puts "MATCH USERS:"
+      p match.users
+      puts "\nALL USERS:"
+      p User.all
+      puts "\nALL MATCHES:"
+      p Match.all
     end
   end
 end

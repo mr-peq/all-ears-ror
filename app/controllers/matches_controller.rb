@@ -51,8 +51,8 @@ class MatchesController < ApplicationController
   end
 
   def update
-    @match = Match.find(params[:id])
     begin
+      @match = Match.find(params[:id])
       user_matches = update_user_matches
       user_matches.each(&:save!)
     rescue => exception
@@ -60,7 +60,7 @@ class MatchesController < ApplicationController
     end
 
     if @errors
-      render json: @errors
+      render json: @errors.message, status: :unprocessable_entity
     else
       render json: @match.stats
     end

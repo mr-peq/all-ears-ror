@@ -1,9 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  user = User.find_by(nickname: 'allen')
-  match = Match.create(number_of_rounds: rand(3..10))
-  UserMatch.create(user:, match:, score: 2)
+  let(:user) { create(:user_with_2_matches) }
 
   describe '#total_matches' do
     it "returns the total number of matches" do
