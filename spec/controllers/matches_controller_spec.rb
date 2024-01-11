@@ -3,6 +3,9 @@ require "rails_helper"
 RSpec.describe MatchesController, type: :controller do
   let!(:match) { create(:match_with_3_users) }
   let!(:match_2) { create(:match_with_3_users) }
+  let!(:user_two) { create(:user, {nickname: 'alt_user2'}) }
+  let!(:user_four) { create(:user, {nickname: 'alt_user4'}) }
+  let!(:user_six) { create(:user, {nickname: 'alt_user6'}) }
 
   describe 'GET#index' do
     it "returns a 200 HTTP status" do
@@ -43,13 +46,12 @@ RSpec.describe MatchesController, type: :controller do
 
   describe 'POST#create' do
     it "creates a new match if the params are correct" do
-      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['user2', 'user4', 'user6'] }
-      p response.body
+      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['alt_user2', 'alt_user4', 'alt_user6'] }
       expect( response ).to have_http_status(200)
     end
 
     it "returns the newly created match stats" do
-      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['user2', 'user4', 'user6'] }
+      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['alt_user2', 'alt_user4', 'alt_user6'] }
       expect( response.parsed_body.keys ).to include('id', 'number_of_rounds', 'user_scores' )
     end
   end
@@ -111,6 +113,7 @@ RSpec.describe MatchesController, type: :controller do
       p User.all
       puts "\nALL MATCHES:"
       p Match.all
+      #todo - This isn't testing anything? Make sure these players exist in the db, request their pre-request scores frol db & save to variable, then run the patch request, then query the DB to check their scores have been updates
     end
   end
 end
