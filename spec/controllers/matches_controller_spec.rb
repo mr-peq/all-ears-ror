@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe MatchesController, type: :controller do
-  let(:match) { create(:match_with_3_users) }
-  let(:match_2) { create(:match_with_3_users) }
+  let!(:match) { create(:match_with_3_users) }
+  let!(:match_2) { create(:match_with_3_users) }
 
   describe 'GET#index' do
     it "returns a 200 HTTP status" do
