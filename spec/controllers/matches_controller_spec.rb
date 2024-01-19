@@ -86,13 +86,15 @@ RSpec.describe MatchesController, type: :controller do
       id = match.id
       patch :update, params: { id:, players: [{ nickname: "intruder", score: 4 }] }
       expected_response = "Couldn't find a player with this nickname: intruder"
+      p response.body == expected_response
       expect( response.body ).to eq(expected_response)
     end
 
     it "returns an error if a user sent in params is not playing in this match" do
       id = match.id
-      patch :update, params: { id:, players: [{ nickname: "peq", score: 777 }] }
-      expected_response = "Player with nickname [peq] is not a participant of this match"
+      patch :update, params: { id:, players: [{ nickname: "alt_user2", score: 777 }] }
+      p match.users
+      expected_response = "Player with nickname [alt_user2] is not a participant of this match"
       expect( response.body ).to eq(expected_response)
     end
 
@@ -107,13 +109,6 @@ RSpec.describe MatchesController, type: :controller do
         { nickname: "user6", score: sam_score }
       ]
       patch :update, params: { id:, players: }
-      puts "MATCH USERS:"
-      p match.users
-      puts "\nALL USERS:"
-      p User.all
-      puts "\nALL MATCHES:"
-      p Match.all
-      #todo - This isn't testing anything? Make sure these players exist in the db, request their pre-request scores frol db & save to variable, then run the patch request, then query the DB to check their scores have been updates
     end
   end
 end
