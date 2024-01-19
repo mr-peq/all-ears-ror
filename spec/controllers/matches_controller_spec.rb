@@ -86,7 +86,6 @@ RSpec.describe MatchesController, type: :controller do
       id = match.id
       patch :update, params: { id:, players: [{ nickname: "intruder", score: 4 }] }
       expected_response = "Couldn't find a player with this nickname: intruder"
-      p response.body == expected_response
       expect( response.body ).to eq(expected_response)
     end
 
