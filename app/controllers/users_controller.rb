@@ -35,7 +35,9 @@ class UsersController < ApplicationController
 
   def create
     begin
-      @user = User.create!(user_params)
+      params["users"].each do |nickname|
+        @user = User.create!(nickname:)
+      end
     rescue => exception
       @errors = exception
     end
