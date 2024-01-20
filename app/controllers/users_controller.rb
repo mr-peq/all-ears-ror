@@ -35,6 +35,8 @@ class UsersController < ApplicationController
 
   def create
     begin
+      nicknames_exist?
+      set_nicknames
       nicknames_valid?
       @users = []
       params[:nicknames].each do |nickname|
@@ -55,13 +57,19 @@ class UsersController < ApplicationController
 
   private
 
+  def nicknames_exist?
+    raise ArgumentError, "No 'nicknames' key found in params" if params[:nicknames].blank?
+  end
+
+  def set_nicknames
+    # Removes empty nicknames and duplicates from params
+    params[:nicknames] = params[:nicknames].reject(&:empty?).uniq
+  end
+
   def nicknames_valid?
-    # Nicknames param must exist, and there must be between 3 and 10 players
-    if params[:nicknames].blank? || params[:nicknames].uniq.length < 3 || params[:nicknames].uniq.length > 10
-      raise ArgumentError, "#{params[:nicknames].blank? ? 0 : params[:nicknames].uniq.length } players provided, there must be 3..10 players"
-    # Nicknames param mustn't contain an empty ("") nickname
-    elsif params[:nicknames].include?("")
-      raise ArgumentError, "Nicknames provided contains an empty nickname"
+    # Ensures between 3 and 10 players were sent
+    if params[:nicknames].length < 3 || params[:nicknames].length > 10
+      raise ArgumentError, "#{params[:nicknames].length} players provided, there must be 3..10 players"
     end
   end
 
