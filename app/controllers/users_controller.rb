@@ -35,8 +35,10 @@ class UsersController < ApplicationController
 
   def create
     begin
+      @users = []
       params["users"].each do |nickname|
-        @user = User.create!(nickname:)
+        user = User.find_or_create_by!(nickname:)
+        @users << user
       end
     rescue => exception
       @errors = exception
@@ -45,7 +47,7 @@ class UsersController < ApplicationController
     if @errors
       render json: @errors, status: :unprocessable_entity
     else
-      render json: @user
+      render json: @users
     end
   end
 
