@@ -63,7 +63,7 @@ class UsersController < ApplicationController
 
   def set_nicknames
     # Removes empty nicknames and duplicates from params
-    params[:nicknames] = params[:nicknames].reject(&:empty?).uniq
+    params[:nicknames] = params[:nicknames].map(&:strip).reject(&:empty?).uniq
   end
 
   def nicknames_valid?
