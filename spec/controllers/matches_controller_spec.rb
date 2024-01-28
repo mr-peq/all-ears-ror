@@ -93,8 +93,8 @@ RSpec.describe MatchesController, type: :controller do
 
     it "returns an error if a user sent in params is not playing in this match" do
       id = match.id
-      patch :update, params: { id:, players: [{ nickname: "peq", score: 777 }] }
-      expected_response = "Player with nickname [peq] is not a participant of this match"
+      patch :update, params: { id:, players: [{ nickname: "alt_user2", score: 777 }] }
+      expected_response = "Player with nickname [alt_user2] is not a participant of this match"
       expect( response.body ).to eq(expected_response)
     end
 
@@ -106,6 +106,7 @@ RSpec.describe MatchesController, type: :controller do
         { nickname: "sam", score: 9 }
       ]
       patch :update, params: { id:, players: }
+
       user_scores = response.parsed_body["user_scores"]
       # Mapping user_scores to have a hash with nicknames as keys and scores as values (overkill, I know, but more convenient)
       mapped_user_scores = user_scores.map { |user| [user["user"].to_sym, user["score"]] }.to_h
