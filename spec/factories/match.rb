@@ -7,5 +7,13 @@ FactoryBot.define do
         create_list(:user_match, 3, match:)
       end
     end
+
+    factory :match_custom do
+      after(:create) do |match, evaluator|
+        evaluator.users.each do |user|
+          create(:user_match, match:, user:) unless match.users.include?(user)
+        end
+      end
+    end
   end
 end

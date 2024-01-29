@@ -2,10 +2,12 @@ require "rails_helper"
 
 RSpec.describe MatchesController, type: :controller do
   let!(:match) { create(:match_with_3_users) }
-  let!(:match_2) { create(:match_with_3_users) }
-  let!(:user_two) { create(:user, {nickname: 'alt_user2'}) }
-  let!(:user_four) { create(:user, {nickname: 'alt_user4'}) }
-  let!(:user_six) { create(:user, {nickname: 'alt_user6'}) }
+  # let!(:match_2) { create(:match_with_3_users) }
+  let!(:allen) { create(:user, {nickname: 'allen'}) }
+  let!(:joe) { create(:user, {nickname: 'joe'}) }
+  let!(:sam) { create(:user, {nickname: 'sam'}) }
+  let!(:peq) { create(:user, {nickname: 'peq'}) }
+  let!(:custom_match) { create(:match_custom, { users: [allen, joe, sam] }) }
 
   describe 'GET#index' do
     it "returns a 200 HTTP status" do
@@ -46,12 +48,12 @@ RSpec.describe MatchesController, type: :controller do
 
   describe 'POST#create' do
     it "creates a new match if the params are correct" do
-      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['alt_user2', 'alt_user4', 'alt_user6'] }
+      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['allen', 'joe', 'sam'] }
       expect( response ).to have_http_status(200)
     end
 
     it "returns the newly created match stats" do
-      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['alt_user2', 'alt_user4', 'alt_user6'] }
+      post :create, params: { match: { number_of_rounds: 5 }, nicknames: ['allen', 'joe', 'sam'] }
       expect( response.parsed_body.keys ).to include('id', 'number_of_rounds', 'user_scores' )
     end
   end
@@ -76,7 +78,7 @@ RSpec.describe MatchesController, type: :controller do
     end
 
     it "returns :unprocessable_entity error if a player sent in params does not exist" do
-      post :create, params: { match: { number_of_rounds: 3 }, nicknames: ['user2', 'user4', 'intruder'] }
+      post :create, params: { match: { number_of_rounds: 3 }, nicknames: ['allen', 'joe', 'intruder'] }
       expect( response ).to have_http_status(:unprocessable_entity)
     end
   end
@@ -97,16 +99,18 @@ RSpec.describe MatchesController, type: :controller do
     end
 
     it "updates the users' scores" do
-      id = match.id
-      allen_score = 42
-      joe_score = 21
-      sam_score = 9
+      id = custom_match.id
       players = [
-        { nickname: "user2", score: allen_score },
-        { nickname: "user4", score: joe_score },
-        { nickname: "user6", score: sam_score }
+        { nickname: "allen", score: 42 },
+        { nickname: "joe", score: 21 },
+        { nickname: "sam", score: 9 }
       ]
       patch :update, params: { id:, players: }
+
+      user_scores = response.parsed_body["user_scores"]
+      # Mapping user_scores to have a hash with nicknames as keys and scores as values (overkill, I know, but more convenient)
+      mapped_user_scores = user_scores.map { |user| [user["user"].to_sym, user["score"]] }.to_h
+      expect(mapped_user_scores).to eq({ allen: 42, joe: 21, sam: 9 })
     end
   end
 end
