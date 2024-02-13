@@ -93,8 +93,8 @@ RSpec.describe MatchesController, type: :controller do
 
     it "returns an error if a user sent in params is not playing in this match" do
       id = match.id
-      patch :update, params: { id:, players: [{ nickname: "alt_user2", score: 777 }] }
-      expected_response = "Player with nickname [alt_user2] is not a participant of this match"
+      patch :update, params: { id:, players: [{ nickname: "peq", score: 777 }] }
+      expected_response = "Player with nickname [peq] is not a participant of this match"
       expect( response.body ).to eq(expected_response)
     end
 
