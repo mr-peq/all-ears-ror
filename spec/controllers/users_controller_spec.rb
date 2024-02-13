@@ -9,7 +9,6 @@ RSpec.describe UsersController, type: :controller do
   describe "GET#index" do
     it "returns a 200 HTTP status" do
       get :index
-      p response.parsed_body
       expect( response ).to have_http_status(200)
     end
 
@@ -41,6 +40,12 @@ RSpec.describe UsersController, type: :controller do
       not_a_user_nickname = "intruder"
       get :show, params: { nickname: not_a_user_nickname }
       expect( response.parsed_body ).to eq("User with nickname #{not_a_user_nickname} not found")
+    end
+
+    it "returns the user's stats" do
+      get :show, params: { nickname: allen.nickname }
+      expected_attributes = ["id", "nickname", "total_matches", "total_points_scored", "matches"]
+      expect( response.parsed_body.keys ).to eq(expected_attributes)
     end
   end
 end
