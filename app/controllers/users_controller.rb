@@ -21,7 +21,7 @@ class UsersController < ApplicationController
   def show
     begin
       @user = User.find_by(nickname: params[:nickname])
-      raise ArgumentError, "User with nickname #{params[:nickname]} not found"
+      raise ArgumentError, "User with nickname #{params[:nickname]} not found" if @user.nil?
     rescue => exception
       @errors = exception
     end
